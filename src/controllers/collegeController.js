@@ -16,13 +16,14 @@ const isValid = function (value) {
 const createCollege = async function (req, res) {
     try {
         let data = req.body
-        if (!isValid(data.name)) return res.status(400).send({ status: false, message: "name is mandatory." })
+        if (!Object.keys(data).length) return res.status(400).send({ status: false, msg: "Please Enter The College Details!", });
+        if (!isValid(data.name)) return res.status(400).send({ status: false, message: "Please Enter The College Name!" })
         if (!data.name.match(nameRegex)) return res.status(400).send({ status: false, message: "name should contain alphabets only and not alphanumeric." })
 
-        if (!isValid(data.fullName)) return res.status(400).send({ status: false, message: "fullName is mandatory." })
+        if (!isValid(data.fullName)) return res.status(400).send({ status: false, message: "Enter the FullName of the College." })
         if (!data.fullName.match(nameRegex)) return res.status(400).send({ status: false, message: "fullName should contain alphabets only and not alphanumeric." })
 
-        if (!isValid(data.logoLink)) return res.status(400).send({ status: false, message: "logoLink is mandatory." })
+        if (!isValid(data.logoLink)) return res.status(400).send({ status: false, message: "Please Enter The logoLink Of The College." })
         // if (!data.logoLink.match(linkRegex)) return res.status(400).send({ status: false, message: "logoLink must be either in png, jpg or jpeg format." })
 
         let college = await collegeModel.findOne({ name: data.name })
