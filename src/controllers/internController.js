@@ -45,7 +45,7 @@ const createIntern = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please enter the college name. ⚠️" })
 
         let college = await collegeModel.findOne({ name: collegeName })  // --> to check if that college is present in the database
-        if (!college) return res.status(400).send({ status: false, message: "No such college found. ⚠️" })  // --> if no such college exists
+        if (!college) return res.status(404).send({ status: false, message: "No such college found. ⚠️" })  // --> if no such college exists
 
         // if that collegeName is present in the database
         data.collegeId = college["_id"]  // --> adding a key value pair to the data provided in request body
