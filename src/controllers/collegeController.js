@@ -1,20 +1,15 @@
 const mongoose = require("mongoose")
 const collegeModel = require("../models/collegeModel")
 const internModel = require("../models/internModel")
-const {isValid} = require("../validations/validator")
+const {isValid, nameRegex, linkRegex} = require("../validations/validator")
 
 //==========================Regex======================================================
-let nameRegex = /^[#.a-zA-Z\s,-]+$/
-let linkRegex = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/
+// let nameRegex = /^[.a-zA-Z\s,-]+$/
+// let linkRegex = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|gif|png)/
 
 
 //==========================post college Api==============================================================
 
-// const isValid = function (value) {
-//     if (typeof value === 'undefined' || value === null) return false
-//     if (typeof value === 'string' && value.trim().length === 0) return false
-//     return true;
-// }
 
 const createCollege = async function (req, res) {
     try {
@@ -23,23 +18,23 @@ const createCollege = async function (req, res) {
             return res.status(400).send({ status: false, message: "Please enter the name, fullName and logoLink. ⚠️" });
         const { name, fullName, logoLink } = data
 
-        if (!isValid(name) || !nameRegex.test(name))
-            return res.status(400).send({ status: false, message: "Please enter a valid college name. It should not be alphanumeric. ⚠️" })
-        // if (!data.name.match(nameRegex))
-        //     return res.status(400).send({ status: false, message: "name should contain alphabets only." })
+        if (!isValid(name)) //|| !nameRegex.test(name))
+            return res.status(400).send({ status: false, message: "Please enter a valid college name. ⚠️" })
+        if (!data.name.match(nameRegex))
+            return res.status(400).send({ status: false, message: "name should contain alphabets only. ⚠️" })
 
-        if (!isValid(fullName) || !nameRegex.test(fullName))
-            return res.status(400).send({ status: false, message: "Enter a valid fullName of the college. It should not be alphanumeric. ⚠️" })
-        // if (!data.fullName.match(nameRegex))
-        //     return res.status(400).send({ status: false, message: "fullName cannot be alphanumeric." })
+        if (!isValid(fullName)) //|| !nameRegex.test(fullName))
+            return res.status(400).send({ status: false, message: "Enter a valid fullName of the college. ⚠️" })
+        if (!data.fullName.match(nameRegex))
+            return res.status(400).send({ status: false, message: "fullName cannot be alphanumeric. ⚠️" })
 
-        if (!isValid(logoLink) || !linkRegex.test(logoLink))
+        if (!isValid(logoLink)) //|| !linkRegex.test(logoLink))/
             return res.status(400).send({ status: false, message: "Please enter a valid logoLink. ⚠️" })
-        // if (!logoLink.match(linkRegex))
-        //     return res.status(400).send({ status: false, message: "Please enter a valid logoLink.1" })
+        if (!logoLink.match(linkRegex))
+            return res.status(400).send({ status: false, message: "please enter a valid URL. ⚠️" })
 
         let college = await collegeModel.findOne({ name: data.name })
-        if (college) return res.status(400).send({ status: false, message: "name should be unique. ⚠️" })
+        if (college) return res.status(400).send({ status: false, message: "This name is already used. ⚠️" })
 
         let collegeCreated = await collegeModel.create(data)
         return res.status(201).send({ status: true, data: collegeCreated })
@@ -68,4 +63,4 @@ const getDetails = async function (req, res) {
 }
 
 module.exports = { getDetails, createCollege }
-// module.exports.getDetails = getDetails
+

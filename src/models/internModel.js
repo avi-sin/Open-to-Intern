@@ -6,7 +6,7 @@ const internSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     email: {
       type: String,
@@ -15,7 +15,7 @@ const internSchema = new mongoose.Schema(
       trim: true
     },
     mobile: {
-      type: Number,
+      type: String,
       required: true,
       unique: true,
       trim:true
@@ -29,8 +29,8 @@ const internSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     }
-  },
-  { timestamps: true }
+  }
+  // { timestamps: true }
 );
 
 

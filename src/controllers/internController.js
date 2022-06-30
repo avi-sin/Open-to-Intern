@@ -1,20 +1,11 @@
 const mongoose = require("mongoose")
 const collegeModel = require("../models/collegeModel")
 const internModel = require("../models/internModel")
-// const validator = require('email-validator')
+const { isValid, nameRegex, emailRegex, mobileRegex } = require("../validations/validator")
 
 
-let nameRegex = /^[#.a-zA-Z\s,-]+$/
-// let nameRegex = /^[a-zA-Z\s]$/   
-let emailRegex = /^[a-z]{1}[a-z0-9._]{1,100}[@]{1}[a-z]{2,15}[.]{1}[a-z]{2,10}$/
-let numberRegex = /^(\+\d{1,3}[- ]?)?\d{10}$/
 
-
-const isValid = function (value) {
-    if (typeof value === 'undefined' || value === null) return false
-    if (typeof value === 'string' && value.trim().length === 0) return false
-    return true;
-}
+// ==> POST api : to create an intern
 
 const createIntern = async function (req, res) {
     try {
@@ -22,35 +13,42 @@ const createIntern = async function (req, res) {
         if (Object.keys(data).length === 0)
             return res.status(400).send({ status: false, message: "Please enter the name, email, mobile and collegeId. ⚠️" });
 
-        const { name, email, mobile, collegeId } = data
-        if (!isValid(name) || !nameRegex.test(name))
+        const { name, email, mobile, collegeName } = data
+        
+        if (!isValid(name)) //|| !nameRegex.test(name))
             return res.status(400).send({ status: false, message: "Please enter the valid intern name. ⚠️" })
-        // if (!nameRegex.test(name))return res.status(400).send({ status: false, message: "name should contain alphabets only." })
+        if (!nameRegex.test(name)) return res.status(400).send({ status: false, message: "name should contain alphabets only. ⚠️" })
 
-        // let validatedemail = validator.validate(email)
-        // // console.log(validatedemail);
-        // // return res.send("yes")
-        // if (!validatedemail) return res.send({ msg: "email is not valid" })
-
-        if (!isValid(email) || !emailRegex.test(email))
+        if (!isValid(email)) //|| !emailRegex.test(email))
             return res.status(400).send({ status: false, message: "Please enter a valid email. ⚠️" })
-        // if (!emailRegex.test(email))return res.status(400).send({ status: false, message: "Please enter the emailId in a proper way" })
+        if (!emailRegex.test(email)) return res.status(400).send({ status: false, message: "Please enter the emailId in a proper way. ⚠️" })
+        let getEmail = await internModel.findOne({ email: email });
+        if (getEmail) {
+            return res.status(400).send({ status: false, msg: "Email is already in use, please enter a new one ⚠️" });
+        }
 
-        if (!isValid(mobile) || !numberRegex.test(mobile))
+        if (!isValid(mobile)) //|| !numberRegex.test(mobile))
             return res.status(400).send({ status: false, message: "Please enter valid mobile number. ⚠️" })
-        // if (!numberRegex.test(mobile))return res.status(400).send({ status: false, message: "Enter mobile number in a valid format." })
+        if (!mobileRegex.test(mobile)) return res.status(400).send({ status: false, message: "Enter mobile number in a valid format. ⚠️" })
+        let getMobile = await internModel.findOne({ mobile: mobile });
+        if (getMobile) {
+            return res.status(400).send({ status: false, msg: "Mobile no. is already in use, please enter a new one. ⚠️" });
+        }
 
-        if (!isValid(collegeId) || !mongoose.Types.ObjectId.isValid(collegeId))
-            return res.status(400).send({ status: false, message: "Please enter valid college id. ⚠️" })
+        if (!isValid(collegeName))
+            return res.status(400).send({ status: false, message: "Please enter valid college name. ⚠️" })
 
-        let college = await collegeModel.findById(data.collegeId)
+        let college = await collegeModel.findOne({ name: collegeName })
         if (!college) return res.status(400).send({ status: false, message: "No such college found. ⚠️" })
+        data.collegeId = college["_id"]
 
         let internCreated = await internModel.create(data)
-        return res.status(201).send({ status: true, data: internCreated })
-    } catch (err) {
-        return res.status(500).send({ status: false, message: err.message })
-    }
+    return res.status(201).send({ status: true, data: internCreated })
+} catch (err) {
+    return res.status(500).send({ status: false, message: err.message })
+}
 }
 
-module.exports.createIntern = createIntern
+
+
+module.exports.createIntern = createIntern  // --> exporting the function
