@@ -1,5 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require("mongoose");  // --> mongoose module is imported
 
+// to define a format (schema) for creating a college in the database
 const collegeSchema = new mongoose.Schema(
   {
     name: {
@@ -27,4 +28,4 @@ const collegeSchema = new mongoose.Schema(
   // { timestamps: true }
 );
 
-module.exports = mongoose.model("College", collegeSchema);
+module.exports = mongoose.model("College", collegeSchema);  // --> mongoose creates the model using the schema
