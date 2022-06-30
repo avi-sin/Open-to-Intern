@@ -52,7 +52,9 @@ const createCollege = async function (req, res) {
 const getDetails = async function (req, res) {
     try {
         let collegeName = req.query.collegeName  // --> collegeName is provided in the query params
-        let findCollege = await collegeModel.findOne({ name: collegeName })  // --> to check if that college exists in the database
+
+        // to check if that college exists in the database and is not deleted ( isDeleted: false )
+        let findCollege = await collegeModel.findOne({ name: collegeName, isDeleted: false })
 
         // if that college doesn't exist in the database
         if (!findCollege) return res.status(400).send({ status: false, message: "No such college found ❗" })
@@ -60,8 +62,8 @@ const getDetails = async function (req, res) {
         // if that college exists in the database
         const { name, fullName, logoLink } = findCollege  // --> destructing the object of the college found
 
-        // database call to find all the interns in that college
-        let interns = await internModel.find({ collegeId: findCollege._id }).select({ name: 1, email: 1, mobile: 1 })
+        // database call to find all the interns in that college which are not deleted
+        let interns = await internModel.find({ collegeId: findCollege._id, isDeleted: false }).select({ name: 1, email: 1, mobile: 1 })
         if (interns.length === 0) return res.status(400).send({ status: false, message: "No intern(s) in this college ❗" })
 
         let details = { name: name, fullName: fullName, logoLink: logoLink, interns: interns }  // --> defining a new object
