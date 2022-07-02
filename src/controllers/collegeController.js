@@ -53,6 +53,8 @@ const getDetails = async function (req, res) {
     try {
         let collegeName = req.query.collegeName  // --> collegeName is provided in the query params
 
+        if (!collegeName) return res.status(400).send({ status: false, message: "Provide the collegeName in query params."})
+
         // to check if that college exists in the database and is not deleted ( isDeleted: false )
         let findCollege = await collegeModel.findOne({ name: collegeName, isDeleted: false })
 
